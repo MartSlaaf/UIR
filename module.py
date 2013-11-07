@@ -1,10 +1,6 @@
 from NodesLibrary import *
 from OwnMath import *
-from sys import maxint as maximum_deviation
 import random
-
-MAX_FORESTS_IN_COLLECTION = 15
-MIN_FORESTS_IN_COLLECTION = 5
 
 
 class OneTree():
@@ -25,6 +21,23 @@ class OneTree():
         self._inputElement = 0
         if input_element:
             self._generate(input_element)
+        else:
+            raise Exception('wrong arg"s')
+
+    def execute(self):
+        preput = self._inputElement
+        for node in self._nodes:
+            preput = node.evalMe(preput)
+        return preput
+
+    def mutate(self, input_raw):
+        random.seed()
+        if random.random() < TREE_FULL_MUTATION_PROBABILITY:
+            self._generate(input_raw)
+        else:
+            for nodenumber in range(len(self._nodes)):
+                if random.random() < NODE_FULL_MUTATION_PROBABILITY:
+                    self._nodes[nodenumber] = eval(LIST_OF_FUNCTIONS[random.randint(1, len(LIST_OF_FUNCTIONS))])()
 
 
 class OneForest():
@@ -33,21 +46,26 @@ class OneForest():
         self.result_row = []
         self.power = None
         self._neuro = None
-        self._fullOutput = []
-        self.fitness = maximum_deviation
+        self.full_output = []
+        self.fitness = 0
         if input_row and full_output:
             self._generate(input_row, full_output)
         elif first_forest and second_forest:
             self._crossover(first_forest, second_forest)
+        else:
+            raise Exception('wrong arg"s')
 
     def _generate(self, input_row, full_output):
         """
         selecting count of trees.
         """
-        self._fullOutput = full_output
-        self.power = len(input_row)
-        self._neuro = OwnNeuro(len(input_row), len(self._fullOutput))
-        for top in input_row:
+        own_row = sampler(input_row, random.randint(1, full_output))
+        self.full_output = full_output
+        self.power = len(own_row)
+        self.result_row = []
+        self._neuro = OwnNeuro(self.power, len(self.full_output))
+        self.fitness = 0
+        for top in own_row:
             self._trees.append(OneTree(input_element=top))
 
     def _crossover(self, first_forest, second_forest):
@@ -59,10 +77,10 @@ class OneForest():
             self._trees.append(tree)
         for tree in second_forest.get_trees(self.power - count_first):
             self._trees.append(tree)
+        self.full_output = first_forest.full_output
+        self._neuro = OwnNeuro(self.power, len(self.full_output))
 
-
-
-    def get_trees(count):
+    def get_trees(self, count):
         return sampler(self._trees, count)
 
     def execute(self):
@@ -75,85 +93,111 @@ class OneForest():
     def act_neuro(self):
         """activating neuro education
         """
-        self._neuro.educate(self.result_row, self._fullOutput)
-        self.fitness = self._neuro.validate(self.result_row, self._fullOutput)
+        self._neuro.educate(self.result_row, self.full_output)
+        self.fitness = self._neuro.validate(self.result_row, self.full_output)
+
+    def mutate(self, full_input):
+        random.seed()
+        if random.random() < FOREST_FULL_MUTATION_PROBABILITY:
+            self._generate(full_input, self.full_output)
+        else:
+            for tree in self._trees:
+                tree.mutate(full_input)
 
 
-    class ForestCollection():
-        def __init__(self, input_row, output_row):
-            """Selecting number of forests
+class ForestCollection():
+    def __init__(self, input_row=None, output_row=None, previous_generation=None):
+        """Selecting number of forests
+        """
+        self._fullInput = []
+        self.power = 0
+        self._forests = []
+        self._fullOutput = []
+        self.best_fitness = 0
+        if input_row and output_row:
+            self._generate(input_row, output_row)
+        elif previous_generation:
+            self._next_generation(previous_generation)
+        else:
+            raise Exception('wrong arg"s')
+
+    def _generate(self, input_row, output_row):
+        self._fullInput = input_row
+        self.power = random.randint(MIN_FORESTS_IN_COLLECTION, MAX_FORESTS_IN_COLLECTION)
+        self._fullOutput = output_row
+        for one_forest in range(len(self.power)):
+            new_row = sampler(self._fullInput, random.randint(1, self._fullOutput))
+            self._forests.append(OneForest(input_row=new_row, full_output=self._fullOutput))
+
+    def _next_generation(self, previous_generation):
+        self._fullInput, self._fullOutput = previous_generation.getData()
+        self.power = previous_generation.power
+        for forest_iteration in range(self.power):
+            first, second = self._selection()
+            self._forests.append(OneForest(first_forest=first, second_forest=second))
+
+    def getData(self):
+        return self._fullInput, self._fullOutput
+
+    def execute(self):
+        """
+        executing one point of algo
+        """
+        for one_forest in self._forests:
+            one_forest.execute()
+            one_forest.act_neuro()
+            if one_forest.deviation < self.best_fitness:
+                self.best_fitness = one_forest.deviation
+
+    def _selection(self):
+        """
+        selecting pair of forests for crossover
+        """
+
+        def select_by_prob(probability_gist):
+            """selecting one point in probability gist
             """
-            self._fullInput = input_row
-            self.forests_count = random.randint(MIN_FORESTS_IN_COLLECTION, MAX_FORESTS_IN_COLLECTION)
-            self._forests = []
-            self._fullOutput = output_row
-            self.best_deviation = maximum_deviation
-            for one_forest in range(len(self.forests_count)):
-                new_row = sampler(self._fullInput, random.randint(1, self._fullOutput))
-                self._forests.append(OneForest(new_row, self._fullOutput))
+            a = random.random()
+            step = 0
+            while (step < len(probability_gist)) and (probability_gist[step] < a):
+                step += 1
+            return step
 
-        def execute(self):
-            """
-            executing one point of algo
-            """
-            for one_forest in self._forests:
-                one_forest.execute()
-                one_forest.act_neuro()
-                if one_forest.deviation < self.best_deviation:
-                    self.best_deviation = one_forest.deviation
+        fitness_summ = 0
+        for one_forest in self._forests:
+            fitness_summ += one_forest.fitness
+        probability_gist = []
+        temp_probability = 0
+        for one_forest in self._forests:
+            probability_gist.append(temp_probability + one_forest.fitness / fitness_summ)
 
-        def _selection(self):
-            """
-            selecting pair of forests for crossover
-            """
+        first = select_by_prob(probability_gist)
+        second = first
+        while second == first:
+            second = select_by_prob(probability_gist)
 
-            def select_by_prob(probability_gist):
-                """selecting one point in probability gist
-                """
-                a = random.random()
-                step = 0
-                while (step < len(probability_gist)) and (probability_gist[step] < a):
-                    step += 1
-                return step
+        return self._forests[first], self._forests[second]
 
-            fitness_summ = 0
-            for one_forest in self._forests:
-                fitness_summ += one_forest.fitness
-            probability_gist = []
-            temp_probability = 0
-            for one_forest in self._forests:
-                probability_gist.append(temp_probability + one_forest.fitness / fitness_summ)
-
-            first = select_by_prob(probability_gist)
-            second = first
-            while second == first:
-                second = select_by_prob(probability_gist)
-
-            return self._forests[first], self._forests[second]
-
-        def next_generation(self):
-            """Get next generation
-            """
-            out_generation = []
-            for forest_iteration in range(self.forests_count):
-                out_generation.append(OneForest.crossover(self._selection()))
+    def mutate(self):
+        for forest in self._forests:
+            forest.mutate()
 
 
-    class Experiment():
-        def __init__(self, input_row, output_row):
-            """getting initial data and making initial collection
-            """
-            self._fullInput = input_row
-            self._fullOutput = output_row
-            self.count = 0
-            self.deviation = maximum_deviation
-            self.init_collection = ForestCollection(self._fullInput, self._fullOutput)
+class Experiment():
+    def __init__(self, input_row, output_row):
+        """getting initial data and making initial collection
+        """
+        self._fullInput = input_row
+        self._fullOutput = output_row
+        self.count = 0
+        self.fitness = 0
+        self.init_collection = ForestCollection(self._fullInput, self._fullOutput)
 
-        def start_experiment(self, stopping_criteria):
-            experimental_collection = self.init_collection
-            while stopping_criteria(self):
-                experimental_collection.execute()
-                self.deviation = experimental_collection.best_deviation
-                self.count += 1
-                experimental_collection = experimental_collection.next_generation()
-                experimental_collection.mutate()
+    def start_experiment(self, stopping_criteria):
+        experimental_collection = self.init_collection
+        while stopping_criteria(self):
+            experimental_collection.execute()
+            self.fitness = experimental_collection.best_fitness
+            self.count += 1
+            experimental_collection = ForestCollection(previous_generation=experimental_collection)
+            experimental_collection.mutate()
