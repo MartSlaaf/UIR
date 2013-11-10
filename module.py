@@ -4,7 +4,7 @@ import random
 from math import log
 from pybrain.tools.shortcuts import buildNetwork
 from pybrain.datasets import SupervisedDataSet
-from pybrain.supervised.trainers import BackpropTrainer
+from pybrain.supervised.trainers import RPropMinusTrainer
 
 
 class OwnNeuro():
@@ -40,20 +40,20 @@ class OwnNeuro():
 
     def educate(self, input_row, output_row):
         """
-        Educating network by backprop.
+        Educating network by r-prop.
         PARTITION_OF_EDUCATION_VERIFICATION_SET - education|validation ratio
         MAX_EPOCHS - count of max steps of education
         OUTCASTING_EPOCHS - if education can't get out of local minimum it given count of steps, it stops
         """
         self._form_set(input_row, output_row)
-        trainer = BackpropTrainer(self.network, self.data_set)
+        trainer = RPropMinusTrainer(module=self.network, dataset=self.data_set)
         self.training_errors, self.validation_errors = trainer.trainUntilConvergence(
             validationProportion=PARTITION_OF_EDUCATION_VERIFICATION_SET,
             maxEpochs=MAX_EPOCHS,
             continueEpochs=OUTCASTING_EPOCHS)
 
     def validate(self):
-        return enumerate(self.validation_errors), enumerate(self.training_errors)
+        return 1/(1+sum(self.validation_errors)/len(self.validation_errors))
 
 
 class OneTree():
@@ -167,7 +167,7 @@ class OneForest():
         """activating neuro education
         """
         self._neuro.educate(self.result_row, self.full_output)
-        self.fitness = self._neuro.validate(self.result_row, self.full_output)
+        self.fitness = self._neuro.validate()
 
     def mutate(self, full_input):
         """

@@ -40,11 +40,8 @@ input_line = [[0, 0, 1, 1], [0, 1, 0, 1]]
 output_line = [[0, 1, 1, 0]]
 """
 subject.educate(input_line, output_line)
-result, reuse = subject.validate()
-for item in result:
-    print item
-for item in reuse:
-    print item
+result = subject.validate()
+print result
 
 print subject.network.activate([1, 1]), 2
 print subject.network.activate([3, 2]), 5
