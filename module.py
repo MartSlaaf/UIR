@@ -208,7 +208,6 @@ class ForestCollection():
         self._forests = []
         self._fullOutput = []
         self.best_fitness = 0
-        self._xml_storage
         if input_row and output_row:
             self._generate(input_row, output_row)
         elif previous_generation:
@@ -223,8 +222,8 @@ class ForestCollection():
         self._fullInput = input_row
         self.power = random.randint(MIN_FORESTS_IN_COLLECTION, MAX_FORESTS_IN_COLLECTION)
         self._fullOutput = output_row
-        for one_forest in range(len(self.power)):
-            new_row = sampler(self._fullInput, random.randint(1, self._fullOutput))
+        for one_forest in range(self.power):
+            new_row = sampler(self._fullInput, random.randint(1, len(self._fullInput)))
             self._forests.append(OneForest(input_row=new_row, full_output=self._fullOutput))
 
     def _next_generation(self, previous_generation):
@@ -252,8 +251,8 @@ class ForestCollection():
         for one_forest in self._forests:
             one_forest.execute()
             one_forest.act_neuro()
-            if one_forest.deviation < self.best_fitness:
-                self.best_fitness = one_forest.deviation
+            if one_forest.fitness < self.best_fitness:
+                self.best_fitness = one_forest.fitness
 
     def _selection(self):
         """
@@ -314,7 +313,7 @@ class Experiment():
         storing results to xml spawning new generation (selecting, crossing, mutating) and so on.
         """
         experimental_collection = self.init_collection
-        while stopping_criteria(self):
+        while not(stopping_criteria(self)):
             experimental_collection.execute()
             self.fitness = experimental_collection.best_fitness
             self.count += 1

@@ -1,9 +1,9 @@
 import random
 import xml.etree.ElementTree as ElementTree
 import numpy as np
-
+from math import fabs
 #this is list of classes in strange state.
-LIST_OF_FUNCTIONS = ['NodeFunction', 'StrangeFunction', 'VariousFunction']
+LIST_OF_FUNCTIONS = ['NoFilter', 'DiscrDiff', 'DiscrDiffRel', 'MedianFilter', 'EvenNoise', 'MovingAverage']
 
 
 class GeneralNodeFunction():
@@ -29,6 +29,7 @@ class NoFilter(GeneralNodeFunction):
         self.params = {}
 
     def eval_me(self, inp):
+        print 'nothing', inp
         return inp
 
 
@@ -41,6 +42,7 @@ class DiscrDiff(GeneralNodeFunction):
         self.params = {}
 
     def eval_me(self, inp):
+        print 'diff', inp
         outp = []
         for iteration in range(len(inp) - 2):
             outp.append(inp[iteration + 1] - inp[iteration])
@@ -56,9 +58,11 @@ class DiscrDiffRel(GeneralNodeFunction):
         self.params = {}
 
     def eval_me(self, inp):
+        print 'diffrel', inp
         outp = []
         for iteration in range(len(inp) - 2):
-            outp.append((inp[iteration + 1] - inp[iteration]) / inp[iteration])
+            outp.append((inp[iteration + 1] - inp[iteration]) / (
+            (fabs(inp[iteration]) + 1) *  ))
         return outp
 
 
@@ -82,6 +86,7 @@ class MedianFilter(GeneralNodeFunction):
 
 
     def eval_me(self, inp):
+        print 'median', inp
         border = int((self.params['frame'] - 1) / 2)
         outp = []
         for it in range(border - 1):
@@ -96,22 +101,26 @@ class EvenNoise(GeneralNodeFunction):
     """
     Addind to the signal random noise in selected frame
     """
+
     def __init__(self):
         random.seed()
         self.frame = random.randint(0, 100)
 
     def eval_me(self, inp):
+        print 'noise', inp
         for iter in range(len(inp) - 1):
             inp[iter] += (random.random() - 0.5) * self.frame
         return inp
 
+
 class MovingAverage(GeneralNodeFunction):
     def __init__(self):
         random.seed()
-        self._window = random.randint(3,8)
+        self._window = random.randint(3, 8)
 
     def _runningMeanFast(self, x, N):
-        return np.convolve(x, np.ones((N,))/N)[(N-1):]
+        return np.convolve(x, np.ones((N,)) / N)[(N - 1):]
 
     def eval_me(self, inp):
-        outp = self._runningMeanFast(inp,self._window)
+        print 'avg', inp
+        outp = self._runningMeanFast(inp, self._window)
