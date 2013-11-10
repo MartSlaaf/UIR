@@ -5,6 +5,7 @@ from math import log
 from pybrain.tools.shortcuts import buildNetwork
 from pybrain.datasets import SupervisedDataSet
 from pybrain.supervised.trainers import RPropMinusTrainer
+import xml.etree.ElementTree as ElementTree
 
 
 class OwnNeuro():
@@ -53,7 +54,7 @@ class OwnNeuro():
             continueEpochs=OUTCASTING_EPOCHS)
 
     def validate(self):
-        return 1/(1+sum(self.validation_errors)/len(self.validation_errors))
+        return 1 / (1 + sum(self.validation_errors) / len(self.validation_errors))
 
 
 class OneTree():
@@ -84,7 +85,7 @@ class OneTree():
         """
         preput = self._inputElement
         for node in self._nodes:
-            preput = node.evalMe(preput)
+            preput = node.eval_me(preput)
         return preput
 
     def mutate(self, input_raw):
@@ -99,6 +100,12 @@ class OneTree():
             for nodenumber in range(len(self._nodes)):
                 if random.random() < NODE_FULL_MUTATION_PROBABILITY:
                     self._nodes[nodenumber] = eval(LIST_OF_FUNCTIONS[random.randint(1, len(LIST_OF_FUNCTIONS))])()
+
+    def store_xml(self, parent):
+        current_tree = ElementTree.SubElement(parent, 'tree',
+                                              attrib={'input': self._inputElement, 'power': len(self._nodes)})
+        for node in self._nodes:
+            node.store_xml(current_tree)
 
 
 class OneForest():
@@ -181,6 +188,13 @@ class OneForest():
             for tree in self._trees:
                 tree.mutate(full_input)
 
+    def store_xml(self, parent):
+        current_forest = ElementTree.SubElement(parent, 'forest',
+                                                attrib={'power': self.power, 'net_input': self.result_row,
+                                                        'fitness': self.fitness, })
+        for tree in self._trees:
+            tree.store_xml(current_forest)
+
 
 class ForestCollection():
     def __init__(self, input_row=None, output_row=None, previous_generation=None):
@@ -193,6 +207,7 @@ class ForestCollection():
         self._forests = []
         self._fullOutput = []
         self.best_fitness = 0
+        self._xml_storage
         if input_row and output_row:
             self._generate(input_row, output_row)
         elif previous_generation:
@@ -274,6 +289,10 @@ class ForestCollection():
         for forest in self._forests:
             forest.mutate()
 
+    def store_xml(self, parent):
+        for forest in self._forests:
+            forest.store_xml(parent)
+
 
 class Experiment():
     def __init__(self, input_row, output_row):
@@ -284,6 +303,7 @@ class Experiment():
         self.count = 0
         self.fitness = 0
         self.init_collection = ForestCollection(self._fullInput, self._fullOutput)
+        self._xml_store = ElementTree.Element('experiment')
 
     def start_experiment(self, stopping_criteria):
         """
@@ -295,5 +315,9 @@ class Experiment():
             experimental_collection.execute()
             self.fitness = experimental_collection.best_fitness
             self.count += 1
+            now_iteration = ElementTree.SubElement(self._xml_store, 'iteration',
+                                                   attrib={'best_fitness': self.fitness, 'generation': self.count})
+            experimental_collection.store_xml(now_iteration)
             experimental_collection = ForestCollection(previous_generation=experimental_collection)
             experimental_collection.mutate()
+
