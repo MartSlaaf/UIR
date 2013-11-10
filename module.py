@@ -9,6 +9,12 @@ from pybrain.supervised.trainers import BackpropTrainer
 
 class OwnNeuro():
     def __init__(self, input_power, output_power, education_power):
+        """
+        Creating network base on input parameters: count of inputs, count of outputs and
+        count of data tuple in training set.
+        Count of neurons in hidden layer calculated by formula, extracted from
+        Arnold - Kolmogorov - Hecht-Nielsen theorem in minimalistic form.
+        """
         self.input_power = input_power
         self.output_power = output_power
         self.education_power = education_power
@@ -20,6 +26,9 @@ class OwnNeuro():
         self.network = buildNetwork(self.input_power, self.hidden_power, self.output_power)
 
     def _form_set(self, input_row, output_row):
+        """
+        Method for creating proper education set from given data.
+        """
         for one_portion in range(self.education_power):
             input_tuple = ()
             for one_input in range(self.input_power):
@@ -30,6 +39,12 @@ class OwnNeuro():
             self.data_set.addSample(input_tuple, output_tuple)
 
     def educate(self, input_row, output_row):
+        """
+        Educating network by backprop.
+        PARTITION_OF_EDUCATION_VERIFICATION_SET - education|validation ratio
+        MAX_EPOCHS - count of max steps of education
+        OUTCASTING_EPOCHS - if education can't get out of local minimum it given count of steps, it stops
+        """
         self._form_set(input_row, output_row)
         trainer = BackpropTrainer(self.network, self.data_set)
         self.training_errors, self.validation_errors = trainer.trainUntilConvergence(
@@ -43,15 +58,16 @@ class OwnNeuro():
 
 class OneTree():
     """Class of one tree in modification forest trees
-"""
+    """
 
     def _generate(self, input_element):
-        #get random sample of available nodes
+        """
+        Generating one tree. Getting one input element as root.
+        Creating chain of random functions.
+        """
         nodes = sampler(LIST_OF_FUNCTIONS, random.randint(1, len(LIST_OF_FUNCTIONS)))
-        #initialize all of
         for node in nodes:
             self._nodes.append(eval(node)())
-            #input value
         self._inputElement = input_element
 
     def __init__(self, input_element=None):
@@ -63,12 +79,19 @@ class OneTree():
             raise Exception('wrong arg"s')
 
     def execute(self):
+        """
+        Chain calculate results of every function in tree, starting from root value.
+        """
         preput = self._inputElement
         for node in self._nodes:
             preput = node.evalMe(preput)
         return preput
 
     def mutate(self, input_raw):
+        """
+        With some little probability mutate whole tree - regenerate it.
+        Other way is try to mutate every node. Mutating node is just regenerating it.
+        """
         random.seed()
         if random.random() < TREE_FULL_MUTATION_PROBABILITY:
             self._generate(input_raw)
@@ -80,6 +103,10 @@ class OneTree():
 
 class OneForest():
     def __init__(self, input_row=None, full_output=None, first_forest=None, second_forest=None):
+        """
+        If we get as input two rows - we starting to generating forest.
+        Another way is getting to forests - gaining new forest by crossover this two.
+        """
         self._trees = []
         self.result_row = []
         self.power = None
@@ -95,20 +122,24 @@ class OneForest():
 
     def _generate(self, input_row, full_output):
         """
-    selecting count of trees.
-    """
-        own_row = sampler(input_row, random.randint(1, full_output))
+        Getting sublist of input row, and starting to generate new trees.
+        Creating own network.
+        """
+        own_row = sampler(input_row, random.randint(1, len(input_row)))
         self.full_output = full_output
         self.power = len(own_row)
         self.result_row = []
-        self._neuro = OwnNeuro(self.power, len(self.full_output))
+        self._neuro = OwnNeuro(self.power, len(self.full_output), len(self.full_output[0]))
         self.fitness = 0
         for top in own_row:
             self._trees.append(OneTree(input_element=top))
 
     def _crossover(self, first_forest, second_forest):
-        """crossing over two forests
-    """
+        """
+        Crossing over two forests.
+        Count of trees in new forest - between two previous forests.
+        Getting random count of trees from first forest - others from another.
+        """
         self.power = random.randint(first_forest.power, second_forest.power)
         count_first = random.randint(0, self.power)
         for tree in first_forest.get_trees(count_first):
@@ -119,22 +150,30 @@ class OneForest():
         self._neuro = OwnNeuro(self.power, len(self.full_output))
 
     def get_trees(self, count):
+        """
+        Sampling count of random trees.
+        """
         return sampler(self._trees, count)
 
     def execute(self):
-        """evaluate all calculations
-    """
+        """
+        Activating evaluation of every tree in forest
+        """
         self.result_row = []
         for tree in self._trees:
             self.result_row.append(tree.execute())
 
     def act_neuro(self):
         """activating neuro education
-    """
+        """
         self._neuro.educate(self.result_row, self.full_output)
         self.fitness = self._neuro.validate(self.result_row, self.full_output)
 
     def mutate(self, full_input):
+        """
+        With some little probability fully mutate (regenerating full forest)
+        Another way try to mutate every tree in forest.
+        """
         random.seed()
         if random.random() < FOREST_FULL_MUTATION_PROBABILITY:
             self._generate(full_input, self.full_output)
@@ -145,8 +184,10 @@ class OneForest():
 
 class ForestCollection():
     def __init__(self, input_row=None, output_row=None, previous_generation=None):
-        """Selecting number of forests
-    """
+        """
+        If passed two rows - start generating collection of forests.
+        Other way, if passed previous generation of collection - spawning next generation
+        """
         self._fullInput = []
         self.power = 0
         self._forests = []
@@ -160,6 +201,9 @@ class ForestCollection():
             raise Exception('wrong arg"s')
 
     def _generate(self, input_row, output_row):
+        """
+        Generating number of forests (it's random in some frame).
+        """
         self._fullInput = input_row
         self.power = random.randint(MIN_FORESTS_IN_COLLECTION, MAX_FORESTS_IN_COLLECTION)
         self._fullOutput = output_row
@@ -168,19 +212,27 @@ class ForestCollection():
             self._forests.append(OneForest(input_row=new_row, full_output=self._fullOutput))
 
     def _next_generation(self, previous_generation):
-        self._fullInput, self._fullOutput = previous_generation.getData()
+        """
+        Spawning next generation of collection by selecting n pairs of distinct forests from previous generation
+        and them over.
+        """
+        self._fullInput, self._fullOutput = previous_generation.get_data()
         self.power = previous_generation.power
         for forest_iteration in range(self.power):
             first, second = self._selection()
             self._forests.append(OneForest(first_forest=first, second_forest=second))
 
-    def getData(self):
+    def get_data(self):
+        """
+        Just outputting private data.
+        """
         return self._fullInput, self._fullOutput
 
     def execute(self):
         """
-    executing one point of algo
-    """
+        Executing every forest in collection, activating their networks.
+        By the way collecting data about best fitness function.
+        """
         for one_forest in self._forests:
             one_forest.execute()
             one_forest.act_neuro()
@@ -189,12 +241,13 @@ class ForestCollection():
 
     def _selection(self):
         """
-    selecting pair of forests for crossover
-    """
+        Selecting distinct pair of forests for crossover.
+        Probability of selecting one forest is as much as that fitness function is better.
+        """
 
         def select_by_prob(probability_gist):
             """selecting one point in probability gist
-        """
+            """
             a = random.random()
             step = 0
             while (step < len(probability_gist)) and (probability_gist[step] < a):
@@ -208,23 +261,24 @@ class ForestCollection():
         temp_probability = 0
         for one_forest in self._forests:
             probability_gist.append(temp_probability + one_forest.fitness / fitness_summ)
-
         first = select_by_prob(probability_gist)
         second = first
         while second == first:
             second = select_by_prob(probability_gist)
-
         return self._forests[first], self._forests[second]
 
     def mutate(self):
+        """
+        Just mutating every forest in collection.
+        """
         for forest in self._forests:
             forest.mutate()
 
 
 class Experiment():
     def __init__(self, input_row, output_row):
-        """getting initial data and making initial collection
-    """
+        """getting initial data and making initial collection.
+        """
         self._fullInput = input_row
         self._fullOutput = output_row
         self.count = 0
@@ -232,6 +286,10 @@ class Experiment():
         self.init_collection = ForestCollection(self._fullInput, self._fullOutput)
 
     def start_experiment(self, stopping_criteria):
+        """
+        Just experiments. While stopping criteria is not actual executing experiment,
+        spawning new generation (selecting, crossing, mutating) and so on.
+        """
         experimental_collection = self.init_collection
         while stopping_criteria(self):
             experimental_collection.execute()
