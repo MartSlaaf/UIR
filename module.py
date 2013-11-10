@@ -6,6 +6,7 @@ from pybrain.tools.shortcuts import buildNetwork
 from pybrain.datasets import SupervisedDataSet
 from pybrain.supervised.trainers import RPropMinusTrainer
 import xml.etree.ElementTree as ElementTree
+from xml.etree.ElementTree import ElementTree as ET
 
 
 class OwnNeuro():
@@ -304,11 +305,13 @@ class Experiment():
         self.fitness = 0
         self.init_collection = ForestCollection(self._fullInput, self._fullOutput)
         self._xml_store = ElementTree.Element('experiment')
+        self._xml_tree = ET()
+        self._xml_tree._setroot(self._xml_store)
 
     def start_experiment(self, stopping_criteria):
         """
         Just experiments. While stopping criteria is not actual executing experiment,
-        spawning new generation (selecting, crossing, mutating) and so on.
+        storing results to xml spawning new generation (selecting, crossing, mutating) and so on.
         """
         experimental_collection = self.init_collection
         while stopping_criteria(self):
@@ -320,4 +323,6 @@ class Experiment():
             experimental_collection.store_xml(now_iteration)
             experimental_collection = ForestCollection(previous_generation=experimental_collection)
             experimental_collection.mutate()
+
+        self._xml_tree.write('outcast.xml')
 
