@@ -5,7 +5,6 @@ from math import log
 from pybrain.tools.shortcuts import buildNetwork
 from pybrain.datasets import SupervisedDataSet
 from pybrain.supervised.trainers import RPropMinusTrainer
-import xml.etree.ElementTree as ElementTree
 from xml.etree.ElementTree import ElementTree as ET
 
 
@@ -29,7 +28,7 @@ class OwnNeuro():
 
     def _form_set(self, input_row, output_row):
         """
-        Method for creating proper education set from given data.
+        Method for creating proper training set from given data.
         """
         for one_portion in range(self.education_power):
             input_tuple = ()
@@ -42,7 +41,7 @@ class OwnNeuro():
 
     def educate(self, input_row, output_row):
         """
-        Educating network by r-prop.
+        Training network by r-prop.
         PARTITION_OF_EDUCATION_VERIFICATION_SET - education|validation ratio
         MAX_EPOCHS - count of max steps of education
         OUTCASTING_EPOCHS - if education can't get out of local minimum it given count of steps, it stops
@@ -100,13 +99,14 @@ class OneTree():
         else:
             for nodenumber in range(len(self._nodes)):
                 if random.random() < NODE_FULL_MUTATION_PROBABILITY:
-                    self._nodes[nodenumber] = eval(LIST_OF_FUNCTIONS[random.randint(1, len(LIST_OF_FUNCTIONS))])()
+                    self._nodes[nodenumber] = eval(LIST_OF_FUNCTIONS[random.randint(0, len(LIST_OF_FUNCTIONS) - 1)])()
 
-    def store_xml(self, parent):
-        current_tree = ElementTree.SubElement(parent, 'tree',
-                                              attrib={'input': self._inputElement, 'power': len(self._nodes)})
+    def store_xml(self):
+        current_tree = '<tree input="' + str(self._inputElement) + '" power="' + str(len(self._nodes)) + '">\n'
         for node in self._nodes:
-            node.store_xml(current_tree)
+            current_tree += node.store_xml()
+        current_tree += '</tree>\n'
+        return current_tree
 
 
 class OneForest():
@@ -155,7 +155,7 @@ class OneForest():
         for tree in second_forest.get_trees(self.power - count_first):
             self._trees.append(tree)
         self.full_output = first_forest.full_output
-        self._neuro = OwnNeuro(self.power, len(self.full_output))
+        self._neuro = OwnNeuro(self.power, len(self.full_output), len(self.full_output[0]))
 
     def get_trees(self, count):
         """
@@ -189,12 +189,11 @@ class OneForest():
             for tree in self._trees:
                 tree.mutate(full_input)
 
-    def store_xml(self, parent):
-        current_forest = ElementTree.SubElement(parent, 'forest',
-                                                attrib={'power': self.power, 'net_input': self.result_row,
-                                                        'fitness': self.fitness, })
+    def store_xml(self):
+        forest_xml = ''
         for tree in self._trees:
-            tree.store_xml(current_forest)
+            forest_xml += tree.store_xml()
+        return forest_xml
 
 
 class ForestCollection():
@@ -234,7 +233,7 @@ class ForestCollection():
         self._fullInput, self._fullOutput = previous_generation.get_data()
         self.power = previous_generation.power
         for forest_iteration in range(self.power):
-            first, second = self._selection()
+            first, second = previous_generation.selection()
             self._forests.append(OneForest(first_forest=first, second_forest=second))
 
     def get_data(self):
@@ -254,7 +253,7 @@ class ForestCollection():
             if one_forest.fitness < self.best_fitness:
                 self.best_fitness = one_forest.fitness
 
-    def _selection(self):
+    def selection(self):
         """
         Selecting distinct pair of forests for crossover.
         Probability of selecting one forest is as much as that fitness function is better.
@@ -263,12 +262,14 @@ class ForestCollection():
         def select_by_prob(probability_gist):
             """selecting one point in probability gist
             """
+            print probability_gist
             a = random.random()
             step = 0
             while (step < len(probability_gist)) and (probability_gist[step] < a):
                 step += 1
-            return step
+            return step - 1
 
+        print self._forests
         fitness_summ = 0
         for one_forest in self._forests:
             fitness_summ += one_forest.fitness
@@ -287,11 +288,15 @@ class ForestCollection():
         Just mutating every forest in collection.
         """
         for forest in self._forests:
-            forest.mutate()
+            forest.mutate(self._fullInput)
 
-    def store_xml(self, parent):
+    def store_xml(self):
+        forests_xml = ''
         for forest in self._forests:
-            forest.store_xml(parent)
+            forests_xml += '<forest power="' + str(forest.power) + '" net_input="' + str(forest.result_row) + '" fitness="' + str(forest.fitness) + '">\n'
+            forests_xml += forest.store_xml()
+            forests_xml += '</forest>\n'
+        return forests_xml
 
 
 class Experiment():
@@ -303,7 +308,7 @@ class Experiment():
         self.count = 0
         self.fitness = 0
         self.init_collection = ForestCollection(self._fullInput, self._fullOutput)
-        self._xml_store = ElementTree.Element('experiment')
+        self._xml_store = '<experiment>'
         self._xml_tree = ET()
         self._xml_tree._setroot(self._xml_store)
 
@@ -313,15 +318,20 @@ class Experiment():
         storing results to xml spawning new generation (selecting, crossing, mutating) and so on.
         """
         experimental_collection = self.init_collection
-        while not(stopping_criteria(self)):
+        while not (stopping_criteria(self)):
+            print self.count
             experimental_collection.execute()
             self.fitness = experimental_collection.best_fitness
             self.count += 1
-            now_iteration = ElementTree.SubElement(self._xml_store, 'iteration',
-                                                   attrib={'best_fitness': self.fitness, 'generation': self.count})
-            experimental_collection.store_xml(now_iteration)
+            self._xml_store += '<iteration best_fitness="' + str(self.fitness) + '" generation="' + str(
+                self.count) + '">\n'
+            self._xml_store += experimental_collection.store_xml()
+            self._xml_store += '</iteration>\n'
+            print 'stored'
             experimental_collection = ForestCollection(previous_generation=experimental_collection)
             experimental_collection.mutate()
-
-        self._xml_tree.write('outcast.xml')
-
+        self._xml_store += '</experiment>'
+        outc = open('outcast.xml', 'w')
+        outc.write(self._xml_store)
+        outc.close()
+        #self._xml_tree.write('outcast.xml')
