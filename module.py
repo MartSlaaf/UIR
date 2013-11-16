@@ -36,7 +36,7 @@ class OwnNeuro():
                 input_tuple += (input_row[one_input][one_portion],)
             output_tuple = ()
             for one_output in range(self.output_power):
-                output_tuple += (output_row[one_output][one_portion],)
+                output_tuple += (output_row[one_output]['data'][one_portion],)
             self.data_set.addSample(input_tuple, output_tuple)
 
     def educate(self, input_row, output_row):
@@ -83,7 +83,7 @@ class OneTree():
         """
         Chain calculate results of every function in tree, starting from root value.
         """
-        preput = self._inputElement
+        preput = self._inputElement['data']
         for node in self._nodes:
             preput = node.eval_me(preput)
         return preput
@@ -102,7 +102,7 @@ class OneTree():
                     self._nodes[nodenumber] = eval(LIST_OF_FUNCTIONS[random.randint(0, len(LIST_OF_FUNCTIONS) - 1)])()
 
     def store_xml(self):
-        current_tree = '<tree input="' + str(self._inputElement) + '" power="' + str(len(self._nodes)) + '">\n'
+        current_tree = '<tree input="' + str(self._inputElement['name']) + '" power="' + str(len(self._nodes)) + '">\n'
         for node in self._nodes:
             current_tree += node.store_xml()
         current_tree += '</tree>\n'
@@ -137,7 +137,7 @@ class OneForest():
         self.full_output = full_output
         self.power = len(own_row)
         self.result_row = []
-        self._neuro = OwnNeuro(self.power, len(self.full_output), len(self.full_output[0]))
+        self._neuro = OwnNeuro(self.power, len(self.full_output), len(self.full_output[0]['data']))
         self.fitness = 0
         for top in own_row:
             self._trees.append(OneTree(input_element=top))
@@ -155,7 +155,7 @@ class OneForest():
         for tree in second_forest.get_trees(self.power - count_first):
             self._trees.append(tree)
         self.full_output = first_forest.full_output
-        self._neuro = OwnNeuro(self.power, len(self.full_output), len(self.full_output[0]))
+        self._neuro = OwnNeuro(self.power, len(self.full_output), len(self.full_output[0]['data']))
 
     def get_trees(self, count):
         """
@@ -250,7 +250,7 @@ class ForestCollection():
         for one_forest in self._forests:
             one_forest.execute()
             one_forest.act_neuro()
-            if one_forest.fitness < self.best_fitness:
+            if one_forest.fitness > self.best_fitness:
                 self.best_fitness = one_forest.fitness
 
     def selection(self):
@@ -262,14 +262,11 @@ class ForestCollection():
         def select_by_prob(probability_gist):
             """selecting one point in probability gist
             """
-            print probability_gist
             a = random.random()
             step = 0
             while (step < len(probability_gist)) and (probability_gist[step] < a):
                 step += 1
             return step - 1
-
-        print self._forests
         fitness_summ = 0
         for one_forest in self._forests:
             fitness_summ += one_forest.fitness
@@ -293,7 +290,7 @@ class ForestCollection():
     def store_xml(self):
         forests_xml = ''
         for forest in self._forests:
-            forests_xml += '<forest power="' + str(forest.power) + '" net_input="' + str(forest.result_row) + '" fitness="' + str(forest.fitness) + '">\n'
+            forests_xml += '<forest power="' + str(forest.power) + '"  fitness="' + str(forest.fitness) + '">\n'
             forests_xml += forest.store_xml()
             forests_xml += '</forest>\n'
         return forests_xml
@@ -308,7 +305,7 @@ class Experiment():
         self.count = 0
         self.fitness = 0
         self.init_collection = ForestCollection(self._fullInput, self._fullOutput)
-        self._xml_store = '<experiment>'
+        self._xml_store = '<experiment>\n'
         self._xml_tree = ET()
         self._xml_tree._setroot(self._xml_store)
 
@@ -327,7 +324,6 @@ class Experiment():
                 self.count) + '">\n'
             self._xml_store += experimental_collection.store_xml()
             self._xml_store += '</iteration>\n'
-            print 'stored'
             experimental_collection = ForestCollection(previous_generation=experimental_collection)
             experimental_collection.mutate()
         self._xml_store += '</experiment>'

@@ -13,7 +13,7 @@ random.seed()
 for i in range(1000):
     input_line[0]['data'].append(random.randint(0, 5))
     input_line[1]['data'].append(random.randint(0, 4))
-    output_line[0]['data'].append(input_line[0][i] + input_line[1][i])
+    output_line[0]['data'].append(input_line[0]['data'][i] + input_line[1]['data'][i])
 experiment = Experiment(input_line, output_line)
 
 experiment.start_experiment(stopping_count(4))
