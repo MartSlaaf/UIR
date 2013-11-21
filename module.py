@@ -5,7 +5,6 @@ from math import log
 from pybrain.tools.shortcuts import buildNetwork
 from pybrain.datasets import SupervisedDataSet
 from pybrain.supervised.trainers import RPropMinusTrainer
-from xml.etree.ElementTree import ElementTree as ET
 
 
 class OwnNeuro():
@@ -83,9 +82,13 @@ class OneTree():
         """
         Chain calculate results of every function in tree, starting from root value.
         """
+        if len(self._inputElement['data']) != 1000:
+            print self._inputElement['data']
+        print 'tree <-', len(self._inputElement['data'])
         preput = self._inputElement['data']
         for node in self._nodes:
             preput = node.eval_me(preput)
+        print 'tree ->', len(preput)
         return preput
 
     def mutate(self, input_raw):
@@ -95,7 +98,7 @@ class OneTree():
         """
         random.seed()
         if random.random() < TREE_FULL_MUTATION_PROBABILITY:
-            self._generate(input_raw)
+            self._generate(sampler(input_raw, 1))
         else:
             for nodenumber in range(len(self._nodes)):
                 if random.random() < NODE_FULL_MUTATION_PROBABILITY:
@@ -133,6 +136,7 @@ class OneForest():
         Getting sublist of input row, and starting to generate new trees.
         Creating own network.
         """
+        print 'forgen <-', len(input_row)
         own_row = sampler(input_row, random.randint(1, len(input_row)))
         self.full_output = full_output
         self.power = len(own_row)
@@ -140,7 +144,9 @@ class OneForest():
         self._neuro = OwnNeuro(self.power, len(self.full_output), len(self.full_output[0]['data']))
         self.fitness = 0
         for top in own_row:
+            print 'tree ==', len(top['data'])
             self._trees.append(OneTree(input_element=top))
+        print 'forgen ->', len(own_row)
 
     def _crossover(self, first_forest, second_forest):
         """
@@ -148,7 +154,9 @@ class OneForest():
         Count of trees in new forest - between two previous forests.
         Getting random count of trees from first forest - others from another.
         """
-        self.power = random.randint(first_forest.power, second_forest.power)
+        pair_power = [first_forest.power, second_forest.power]
+        self.power = random.randint(min(pair_power), max(pair_power))
+        print 'crossover power =', self.power
         count_first = random.randint(0, self.power)
         for tree in first_forest.get_trees(count_first):
             self._trees.append(tree)
@@ -167,9 +175,12 @@ class OneForest():
         """
         Activating evaluation of every tree in forest
         """
+        print 'forest <-', self.power
         self.result_row = []
+
         for tree in self._trees:
             self.result_row.append(tree.execute())
+        print 'forest ->', len(self.result_row)
 
     def act_neuro(self):
         """activating neuro education
@@ -302,12 +313,11 @@ class Experiment():
         """
         self._fullInput = input_row
         self._fullOutput = output_row
+        print len(input_row[0]['data']), len(input_row[1]['data']), len(output_row[0]['data'])
         self.count = 0
         self.fitness = 0
         self.init_collection = ForestCollection(self._fullInput, self._fullOutput)
-        self._xml_store = '<experiment>\n'
-        self._xml_tree = ET()
-        self._xml_tree._setroot(self._xml_store)
+        self._xml_store = '<?xml version="1.1" encoding="UTF-8" ?>\n<experiment>\n'
 
     def start_experiment(self, stopping_criteria):
         """
@@ -330,4 +340,3 @@ class Experiment():
         outc = open('outcast.xml', 'w')
         outc.write(self._xml_store)
         outc.close()
-        #self._xml_tree.write('outcast.xml')
