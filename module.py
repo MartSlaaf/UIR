@@ -5,6 +5,7 @@ from math import log
 from pybrain.tools.shortcuts import buildNetwork
 from pybrain.datasets import SupervisedDataSet
 from pybrain.supervised.trainers import RPropMinusTrainer
+from multiprocessing import Process
 
 
 class OwnNeuro():
@@ -125,7 +126,7 @@ class OneForest():
         self.full_output = []
         self.fitness = 0
         if input_row and full_output:
-            self._generate(input_row, full_output)
+            self._generate(list(input_row), list(full_output))
         elif first_forest and second_forest:
             self._crossover(first_forest, second_forest)
         else:
@@ -185,7 +186,9 @@ class OneForest():
     def act_neuro(self):
         """activating neuro education
         """
+        print self._neuro
         self._neuro.educate(self.result_row, self.full_output)
+        print 'fi', self.fitness
         self.fitness = self._neuro.validate()
 
     def mutate(self, full_input):
@@ -219,7 +222,7 @@ class ForestCollection():
         self._fullOutput = []
         self.best_fitness = 0
         if input_row and output_row:
-            self._generate(input_row, output_row)
+            self._generate(list(input_row), list(output_row))
         elif previous_generation:
             self._next_generation(previous_generation)
         else:
@@ -258,11 +261,15 @@ class ForestCollection():
         Executing every forest in collection, activating their networks.
         By the way collecting data about best fitness function.
         """
+        process_list = []
         for one_forest in self._forests:
-            one_forest.execute()
+            process_list.append(Process(target=one_forest.execute(), args=()))
+        for proc in process_list:
+            proc.start()
+        for proc in process_list:
+            proc.join()
+        for one_forest in self._forests:
             one_forest.act_neuro()
-            if one_forest.fitness > self.best_fitness:
-                self.best_fitness = one_forest.fitness
 
     def selection(self):
         """
