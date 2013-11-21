@@ -5,7 +5,8 @@ from math import log
 from pybrain.tools.shortcuts import buildNetwork
 from pybrain.datasets import SupervisedDataSet
 from pybrain.supervised.trainers import RPropMinusTrainer
-from multiprocessing import Process
+from multiprocessing import Process, Queue
+import copy
 
 
 class OwnNeuro():
@@ -209,6 +210,13 @@ class OneForest():
             forest_xml += tree.store_xml()
         return forest_xml
 
+    def async_execut_educate(self, queue):
+        self.execute()
+        self.act_neuro()
+        queue.put(copy.deepcopy(self))
+        print queue.qsize()
+        return True
+
 
 class ForestCollection():
     def __init__(self, input_row=None, output_row=None, previous_generation=None):
@@ -262,14 +270,19 @@ class ForestCollection():
         By the way collecting data about best fitness function.
         """
         process_list = []
+        forests_queue = Queue(self.power)
         for one_forest in self._forests:
-            process_list.append(Process(target=one_forest.execute(), args=()))
+            process_list.append(Process(target=one_forest.async_execut_educate, args=(forests_queue,)))
         for proc in process_list:
             proc.start()
+        print '-<><><><><><><><><><><>STARTED<><><><><><><><><>-'
         for proc in process_list:
-            proc.join()
-        for one_forest in self._forests:
-            one_forest.act_neuro()
+            proc.join(10)
+        print '-<><><><><><><><><><><>JOINED<><><><><><><><><>-'
+        self._forests = []
+        print self._forests, 'forester'
+        for iter in range(forests_queue.qsize()):
+            self._forests.append(forests_queue.get())
 
     def selection(self):
         """
