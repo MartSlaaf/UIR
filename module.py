@@ -99,7 +99,7 @@ class OneTree():
         """
         random.seed()
         if random.random() < TREE_FULL_MUTATION_PROBABILITY:
-            self._generate(sampler(input_raw, 1))
+            self._generate(input_raw[random.randint(0, len(input_raw)-1)])
         else:
             for nodenumber in range(len(self._nodes)):
                 if random.random() < NODE_FULL_MUTATION_PROBABILITY:
