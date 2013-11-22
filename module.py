@@ -312,7 +312,7 @@ class ForestCollection():
         forests_queue = Queue(self.power)
         iterational = 0
         for one_forest in self._forests:
-            process_list.append(Process(target=main_async_method, args=(forests_queue, one_forest.to_portal(), iterational)))
+            process_list.append(Process(target=main_async_method, args=(forests_queue, copy.copy(one_forest.to_portal()), iterational)))
             iterational += 1
         for proc in process_list:
             proc.start()

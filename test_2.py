@@ -27,4 +27,4 @@ f.close()
 
 experiment = Experiment(input_line, output_line)
 
-experiment.start_experiment(stopping_count(20))
+experiment.start_experiment(stopping_count(4))
