@@ -5,7 +5,15 @@ from math import log
 from pybrain.tools.shortcuts import buildNetwork
 from pybrain.datasets import SupervisedDataSet
 from pybrain.supervised.trainers import RPropMinusTrainer
-from multiprocessing import Process
+from multiprocessing import Process, Queue
+import copy
+import xml.etree.ElementTree as ElementTree
+
+def main_async_method(queue, xml, a):
+    forest = OneForest(xml=xml)
+    forest.execute()
+    forest.act_neuro()
+    queue.put({'fitness': forest.fitness, 'place': a})
 
 
 class OwnNeuro():
@@ -71,11 +79,13 @@ class OneTree():
             self._nodes.append(eval(node)())
         self._inputElement = input_element
 
-    def __init__(self, input_element=None):
+    def __init__(self, input_element=None, xml=None):
         self._nodes = []
         self._inputElement = 0
         if input_element:
             self._generate(input_element)
+        elif xml:
+            self._from_portal(xml)
         else:
             raise Exception('wrong arg"s')
 
@@ -112,9 +122,21 @@ class OneTree():
         current_tree += '</tree>\n'
         return current_tree
 
+    def _from_portal(self, xml):
+        self._inputElement = xml['input']
+        for noder in xml['nodes']:
+            self._nodes.append(eval(noder['name'])())
+            self._nodes[-1].params = noder['params']
+
+    def to_portal(self):
+        noder = []
+        for node in self._nodes:
+            noder.append({'name': node.__class__.__name__, 'params': node.params})
+        return {'input': self._inputElement, 'nodes': noder}
+
 
 class OneForest():
-    def __init__(self, input_row=None, full_output=None, first_forest=None, second_forest=None):
+    def __init__(self, input_row=None, full_output=None, first_forest=None, second_forest=None, xml=None):
         """
         If we get as input two rows - we starting to generating forest.
         Another way is getting to forests - gaining new forest by crossover this two.
@@ -129,6 +151,8 @@ class OneForest():
             self._generate(list(input_row), list(full_output))
         elif first_forest and second_forest:
             self._crossover(first_forest, second_forest)
+        elif xml:
+            self._from_portal(xml)
         else:
             raise Exception('wrong arg"s')
 
@@ -209,6 +233,29 @@ class OneForest():
             forest_xml += tree.store_xml()
         return forest_xml
 
+    def async_execut_educate(self, queue):
+        self.execute()
+        self.act_neuro()
+        queue.put(copy.deepcopy(self))
+        print queue.qsize()
+        return True
+
+    def _from_portal(self, xml):
+        self.full_output = xml['out']
+        self.power = len(xml['trees'])
+        self._neuro = OwnNeuro(self.power, len(self.full_output), len(self.full_output[0]['data']))
+        for iteration in xml['trees']:
+            self._trees.append(OneTree(xml=iteration))
+
+    def to_portal(self):
+        trees=[]
+        for tree in self._trees:
+            trees.append(tree.to_portal())
+        return {'out': self.full_output, 'trees': trees}
+
+
+
+
 
 class ForestCollection():
     def __init__(self, input_row=None, output_row=None, previous_generation=None):
@@ -262,14 +309,21 @@ class ForestCollection():
         By the way collecting data about best fitness function.
         """
         process_list = []
+        forests_queue = Queue(self.power)
+        iterational = 0
         for one_forest in self._forests:
-            process_list.append(Process(target=one_forest.execute(), args=()))
+            process_list.append(Process(target=main_async_method, args=(forests_queue, one_forest.to_portal(), iterational)))
+            iterational += 1
         for proc in process_list:
             proc.start()
+        print '-<><><><><><><><><><><>STARTED<><><><><><><><><>-'
         for proc in process_list:
             proc.join()
-        for one_forest in self._forests:
-            one_forest.act_neuro()
+        print '-<><><><><><><><><><><>JOINED<><><><><><><><><>-'
+        for iter in range(forests_queue.qsize()):
+            tmp = forests_queue.get()
+            self._forests[tmp['place']].fitness = tmp['fitness']
+
 
     def selection(self):
         """
