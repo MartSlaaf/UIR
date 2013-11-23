@@ -283,8 +283,7 @@ class ForestCollection():
         self.power = random.randint(MIN_FORESTS_IN_COLLECTION, MAX_FORESTS_IN_COLLECTION)
         self._fullOutput = output_row
         for one_forest in range(self.power):
-            new_row = sampler(self._fullInput, random.randint(1, len(self._fullInput)))
-            self._forests.append(OneForest(input_row=new_row, full_output=self._fullOutput))
+            self._forests.append(OneForest(input_row=input_row, full_output=self._fullOutput))
 
     def _next_generation(self, previous_generation):
         """
