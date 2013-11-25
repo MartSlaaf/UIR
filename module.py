@@ -14,6 +14,7 @@ def main_async_method(queue, xml, a):
     forest.execute()
     forest.act_neuro()
     queue.put({'fitness': forest.fitness, 'place': a})
+    print '| | |-finished ', queue.qsize(),  ' forest. fitness =', forest.fitness
 
 
 class OwnNeuro():
@@ -93,13 +94,9 @@ class OneTree():
         """
         Chain calculate results of every function in tree, starting from root value.
         """
-        if len(self._inputElement['data']) != 1000:
-            print self._inputElement['data']
-        print 'tree <-', len(self._inputElement['data'])
         preput = self._inputElement['data']
         for node in self._nodes:
             preput = node.eval_me(preput)
-        print 'tree ->', len(preput)
         return preput
 
     def mutate(self, input_raw):
@@ -161,7 +158,6 @@ class OneForest():
         Getting sublist of input row, and starting to generate new trees.
         Creating own network.
         """
-        print 'forgen <-', len(input_row)
         own_row = sampler(input_row, random.randint(1, len(input_row)))
         self.full_output = full_output
         self.power = len(own_row)
@@ -169,9 +165,7 @@ class OneForest():
         self._neuro = OwnNeuro(self.power, len(self.full_output), len(self.full_output[0]['data']))
         self.fitness = 0
         for top in own_row:
-            print 'tree ==', len(top['data'])
             self._trees.append(OneTree(input_element=top))
-        print 'forgen ->', len(own_row)
 
     def _crossover(self, first_forest, second_forest):
         """
@@ -181,7 +175,7 @@ class OneForest():
         """
         pair_power = [first_forest.power, second_forest.power]
         self.power = random.randint(min(pair_power), max(pair_power))
-        print 'crossover power =', self.power
+        print '| |-crossover power =', self.power
         count_first = random.randint(0, self.power)
         for tree in first_forest.get_trees(count_first):
             self._trees.append(tree)
@@ -200,19 +194,15 @@ class OneForest():
         """
         Activating evaluation of every tree in forest
         """
-        print 'forest <-', self.power
         self.result_row = []
 
         for tree in self._trees:
             self.result_row.append(tree.execute())
-        print 'forest ->', len(self.result_row)
 
     def act_neuro(self):
         """activating neuro education
         """
-        print self._neuro
         self._neuro.educate(self.result_row, self.full_output)
-        print 'fi', self.fitness
         self.fitness = self._neuro.validate()
 
     def mutate(self, full_input):
@@ -237,7 +227,6 @@ class OneForest():
         self.execute()
         self.act_neuro()
         queue.put(copy.deepcopy(self))
-        print queue.qsize()
         return True
 
     def _from_portal(self, xml):
@@ -268,6 +257,7 @@ class ForestCollection():
         self._forests = []
         self._fullOutput = []
         self.best_fitness = 0
+        self.probability_gist = []
         if input_row and output_row:
             self._generate(list(input_row), list(output_row))
         elif previous_generation:
@@ -310,19 +300,27 @@ class ForestCollection():
         process_list = []
         forests_queue = Queue(self.power)
         iterational = 0
+        print '| |-starting evaluation, education and validation'
         for one_forest in self._forests:
             process_list.append(Process(target=main_async_method, args=(forests_queue, copy.copy(one_forest.to_portal()), iterational)))
             iterational += 1
         for proc in process_list:
             proc.start()
-        print '-<><><><><><><><><><><>STARTED<><><><><><><><><>-'
         for proc in process_list:
             proc.join()
-        print '-<><><><><><><><><><><>JOINED<><><><><><><><><>-'
         for iter in range(forests_queue.qsize()):
             tmp = forests_queue.get()
             self._forests[tmp['place']].fitness = tmp['fitness']
-
+        print '| |-finished'
+        fitness_summ = 0
+        for one_forest in self._forests:
+            fitness_summ += one_forest.fitness
+        self.probability_gist = []
+        temp_probability = 0
+        for one_forest in self._forests:
+            self.probability_gist.append(temp_probability + one_forest.fitness / fitness_summ)
+            temp_probability = self.probability_gist[-1]
+        print '| |-', self.probability_gist
 
     def selection(self):
         """
@@ -338,17 +336,11 @@ class ForestCollection():
             while (step < len(probability_gist)) and (probability_gist[step] < a):
                 step += 1
             return step - 1
-        fitness_summ = 0
-        for one_forest in self._forests:
-            fitness_summ += one_forest.fitness
-        probability_gist = []
-        temp_probability = 0
-        for one_forest in self._forests:
-            probability_gist.append(temp_probability + one_forest.fitness / fitness_summ)
-        first = select_by_prob(probability_gist)
+        first = select_by_prob(self.probability_gist)
         second = first
         while second == first:
-            second = select_by_prob(probability_gist)
+            second = select_by_prob(self.probability_gist)
+        print '| | |-', first,  second
         return self._forests[first], self._forests[second]
 
     def mutate(self):
@@ -373,7 +365,6 @@ class Experiment():
         """
         self._fullInput = input_row
         self._fullOutput = output_row
-        print len(input_row[0]['data']), len(input_row[1]['data']), len(output_row[0]['data'])
         self.count = 0
         self.fitness = 0
         self.init_collection = ForestCollection(self._fullInput, self._fullOutput)
@@ -386,15 +377,19 @@ class Experiment():
         """
         experimental_collection = self.init_collection
         while not (stopping_criteria(self)):
-            print self.count
+            print 'generation = ', self.count
+            print '|-act'
             experimental_collection.execute()
+
             self.fitness = experimental_collection.best_fitness
             self.count += 1
             self._xml_store += '<iteration best_fitness="' + str(self.fitness) + '" generation="' + str(
                 self.count) + '">\n'
             self._xml_store += experimental_collection.store_xml()
             self._xml_store += '</iteration>\n'
+            print '|-spawn'
             experimental_collection = ForestCollection(previous_generation=experimental_collection)
+            print '|- mutate'
             experimental_collection.mutate()
         self._xml_store += '</experiment>'
         outc = open('outcast.xml', 'w')

@@ -29,7 +29,6 @@ class NoFilter(GeneralNodeFunction):
         self.params = {}
 
     def eval_me(self, inp):
-        print 'nothing <->', len(inp)
         return inp
 
 
@@ -42,11 +41,9 @@ class DiscrDiff(GeneralNodeFunction):
         self.params = {}
 
     def eval_me(self, inp):
-        print 'DiscrDiff <-', len(inp)
         outp = [0]
         for iteration in range(len(inp) - 1):
             outp.append(inp[iteration + 1] - inp[iteration])
-        print 'DiscrDiff ->', len(outp)
         return outp
 
 
@@ -59,7 +56,6 @@ class DiscrDiffRel(GeneralNodeFunction):
         self.params = {}
 
     def eval_me(self, inp):
-        print 'DiscrDiffRel', len(inp)
         outp = [0]
         for iteration in range(len(inp) - 2):
             outp.append((inp[iteration + 1] - inp[iteration]))
@@ -79,7 +75,6 @@ class MedianFilter(GeneralNodeFunction):
         return sorted(frame)[int(self.params['frame'] / 2)]
 
     def eval_me(self, inp):
-        print 'MedianFilter <-', len(inp)
         border = int((self.params['frame'] - 1) / 2)
         aux = list(inp) #this is copy of list!
         outp = []
@@ -88,7 +83,6 @@ class MedianFilter(GeneralNodeFunction):
             aux.append(aux[-1])
         for step in range(border, len(aux) - border):
             outp.append(self._middle((aux[(step - border):(step + border+1)])))
-        print 'MedianFilter ->', len(outp)
         return outp
 
 
@@ -103,12 +97,10 @@ class EvenNoise(GeneralNodeFunction):
         self.params['frame'] = 0
 
     def eval_me(self, inp):
-        print 'EvenNoise <-', len(inp)
         self.params['frame'] = (max(inp) - min(inp)) / 2
         aux = list(inp)
         for iter in range(len(aux) - 1):
             aux[iter] += (random.random() - 0.5) * self.params['frame']
-        print 'EvenNoise ->', len(aux)
         return aux
 
 
@@ -122,8 +114,6 @@ class MovingAverage(GeneralNodeFunction):
         return np.convolve(x, np.ones((N,)) / N)[(N - 1):]
 
     def eval_me(self, inp):
-        print 'MovingAverage <-', len(inp)
         #border = int((self.params['window'] - 1) / 2)
         outp = self._runningMeanFast(inp, self.params['window'])
-        print 'MovingAverage ->', len(outp)
         return list(outp)

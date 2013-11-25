@@ -5,15 +5,16 @@ FOREST_FULL_MUTATION_PROBABILITY = 0.02
 TREE_FULL_MUTATION_PROBABILITY = 0.02
 NODE_FULL_MUTATION_PROBABILITY = 0.02
 PARTITION_OF_EDUCATION_VERIFICATION_SET = 0.6
-MAX_EPOCHS = 30
-OUTCASTING_EPOCHS = 5
+MAX_EPOCHS = 100
+OUTCASTING_EPOCHS = 10
 
 
 def sampler(origin, dest_number):
     random.seed()
     result = []
+    norm = len(origin) - 1
     for i in range(dest_number):
-        result.append(origin[int(random.random()*dest_number)])
+        result.append(origin[int(random.random()*norm)])
     return result
 
 

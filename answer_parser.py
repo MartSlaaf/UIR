@@ -2,7 +2,7 @@ __author__ = 'martolod'
 
 import xml.etree.ElementTree as ElementTree
 from NodesLibrary import LIST_OF_FUNCTIONS
-LIST_OF_ENTERS = ['inflow', 'outflow']
+LIST_OF_ENTERS = ['inflow_noizd', 'outflow', 'trash']
 
 tree = ElementTree.parse('outcast.xml')
 root = tree.getroot()
