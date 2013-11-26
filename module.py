@@ -76,6 +76,7 @@ class OneTree():
         Creating chain of random functions.
         """
         nodes = sampler(LIST_OF_FUNCTIONS, random.randint(1, len(LIST_OF_FUNCTIONS)))
+        self._nodes = []
         for node in nodes:
             self._nodes.append(eval(node)())
         self._inputElement = input_element
@@ -158,7 +159,7 @@ class OneForest():
         Getting sublist of input row, and starting to generate new trees.
         Creating own network.
         """
-        own_row = sampler(input_row, random.randint(1, len(input_row)))
+        own_row = sampler(input_row, random.randint(1, 2))
         self.full_output = full_output
         self.power = len(own_row)
         self.result_row = []
@@ -177,10 +178,14 @@ class OneForest():
         self.power = random.randint(min(pair_power), max(pair_power))
         print '| |-crossover power =', self.power
         count_first = random.randint(0, self.power)
-        for tree in first_forest.get_trees(count_first):
-            self._trees.append(tree)
-        for tree in second_forest.get_trees(self.power - count_first):
-            self._trees.append(tree)
+        first_half_forest = first_forest.get_trees(count_first)
+        second_half_forest = second_forest.get_trees(self.power - count_first)
+        for tree in first_half_forest:
+            self._trees.append(OneTree(xml=tree.to_portal()))
+            print '>>>>>>>', tree._nodes
+        for tree in second_half_forest:
+            self._trees.append(OneTree(xml=tree.to_portal()))
+            print '>>>>>>>', tree._nodes
         self.full_output = first_forest.full_output
         self._neuro = OwnNeuro(self.power, len(self.full_output), len(self.full_output[0]['data']))
 
