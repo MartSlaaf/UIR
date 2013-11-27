@@ -34,7 +34,8 @@ for line in lines:
 differ = DiscrDiff()
 output_line[0]['data'] = differ.eval_me(output_line[0]['data'])
 f.close()
+for iteration in range(20):
+    print '-+=>', iteration, '<=+-'
+    experiment = Experiment(input_line, output_line, '../' + str(iteration) + '.xml')
+    experiment.start_experiment(stopping_count(15))
 
-experiment = Experiment(input_line, output_line)
-
-experiment.start_experiment(stopping_count(15))

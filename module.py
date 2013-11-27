@@ -365,13 +365,14 @@ class ForestCollection():
 
 
 class Experiment():
-    def __init__(self, input_row, output_row):
+    def __init__(self, input_row, output_row, file_string):
         """getting initial data and making initial collection.
         """
         self._fullInput = input_row
         self._fullOutput = output_row
         self.count = 0
         self.fitness = 0
+        self.outcast_address = file_string
         self.init_collection = ForestCollection(self._fullInput, self._fullOutput)
         self._xml_store = '<?xml version="1.1" encoding="UTF-8" ?>\n<experiment>\n'
 
@@ -397,6 +398,6 @@ class Experiment():
             print '|- mutate'
             experimental_collection.mutate()
         self._xml_store += '</experiment>'
-        outc = open('outcast.xml', 'w')
+        outc = open(self.outcast_address, 'w')
         outc.write(self._xml_store)
         outc.close()
