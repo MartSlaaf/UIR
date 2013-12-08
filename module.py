@@ -1,13 +1,12 @@
 from NodesLibrary import *
 from OwnMath import *
 import random
-from math import log
+from math import log, sqrt
 from pybrain.tools.shortcuts import buildNetwork
 from pybrain.datasets import SupervisedDataSet
 from pybrain.supervised.trainers import RPropMinusTrainer
 from multiprocessing import Process, Queue
 import copy
-import xml.etree.ElementTree as ElementTree
 
 def main_async_method(queue, xml, a):
     forest = OneForest(xml=xml)
@@ -31,6 +30,8 @@ class OwnNeuro():
         self.training_errors = []
         self.validation_errors = []
         self.data_set = SupervisedDataSet(self.input_power, self.output_power)
+        self.inputs_for_validation = []
+        self.MSE = 0
         self.hidden_power = int(
             (output_power * education_power / (1 + log(education_power, 2))) / (input_power + output_power))
         self.network = buildNetwork(self.input_power, self.hidden_power, self.output_power)
@@ -43,12 +44,13 @@ class OwnNeuro():
             input_tuple = ()
             for one_input in range(self.input_power):
                 input_tuple += (input_row[one_input][one_portion],)
+            self.inputs_for_validation.append(input_tuple)
             output_tuple = ()
             for one_output in range(self.output_power):
                 output_tuple += (output_row[one_output]['data'][one_portion],)
             self.data_set.addSample(input_tuple, output_tuple)
 
-    def educate(self, input_row, output_row):
+    def train(self, input_row, output_row):
         """
         Training network by r-prop.
         PARTITION_OF_EDUCATION_VERIFICATION_SET - education|validation ratio
@@ -61,9 +63,14 @@ class OwnNeuro():
             validationProportion=PARTITION_OF_EDUCATION_VERIFICATION_SET,
             maxEpochs=MAX_EPOCHS,
             continueEpochs=OUTCASTING_EPOCHS)
+        len_validate = int(len(output_row[0]['data'])*(1-PARTITION_OF_EDUCATION_VERIFICATION_SET))
+        results_of = [list(self.network.activate(x))[0] for x in self.inputs_for_validation[len_validate:]]
+        #self.MSE = sqrt(sum([(results_of[x]-output_row[0]['data'][x]) ** 2 for x in range(len_validate, len(results_of)-1)]) / len(results_of))
+        self.MSE = sum([fabs(results_of[x]-output_row[0]['data'][x]) for x in range(len_validate, len(results_of)-1)]) / len(results_of)
+        print '| | |-MSE = ', self.MSE
 
     def validate(self):
-        return 1 / (1 + sum(self.validation_errors) / len(self.validation_errors))
+        return 1 / (1 + self.MSE)
 
 
 class OneTree():
@@ -159,7 +166,8 @@ class OneForest():
         Getting sublist of input row, and starting to generate new trees.
         Creating own network.
         """
-        own_row = sampler(input_row, random.randint(1, 2))
+        new_power = random.randint(1, len(input_row))
+        own_row = sampler(input_row, new_power)
         self.full_output = full_output
         self.power = len(own_row)
         self.result_row = []
@@ -175,25 +183,17 @@ class OneForest():
         Getting random count of trees from first forest - others from another.
         """
         pair_power = [first_forest.power, second_forest.power]
-        self.power = random.randint(min(pair_power), max(pair_power))
-        print '| |-crossover power =', self.power
-        count_first = random.randint(0, self.power)
-        first_half_forest = first_forest.get_trees(count_first)
-        second_half_forest = second_forest.get_trees(self.power - count_first)
-        for tree in first_half_forest:
-            self._trees.append(OneTree(xml=tree.to_portal()))
-            print '>>>>>>>', tree._nodes
-        for tree in second_half_forest:
-            self._trees.append(OneTree(xml=tree.to_portal()))
-            print '>>>>>>>', tree._nodes
+        self.power = random.randint(max(1, min(pair_power)-2), max(pair_power) + 1)
+        tempor = first_forest.get_trees() + second_forest.get_trees()
+        self._trees = sampler(tempor, self.power, True)
         self.full_output = first_forest.full_output
         self._neuro = OwnNeuro(self.power, len(self.full_output), len(self.full_output[0]['data']))
 
-    def get_trees(self, count):
+    def get_trees(self):
         """
         Sampling count of random trees.
         """
-        return sampler(self._trees, count)
+        return self._trees
 
     def execute(self):
         """
@@ -207,7 +207,7 @@ class OneForest():
     def act_neuro(self):
         """activating neuro education
         """
-        self._neuro.educate(self.result_row, self.full_output)
+        self._neuro.train(self.result_row, self.full_output)
         self.fitness = self._neuro.validate()
 
     def mutate(self, full_input):
@@ -228,12 +228,6 @@ class OneForest():
             forest_xml += tree.store_xml()
         return forest_xml
 
-    def async_execut_educate(self, queue):
-        self.execute()
-        self.act_neuro()
-        queue.put(copy.deepcopy(self))
-        return True
-
     def _from_portal(self, xml):
         self.full_output = xml['out']
         self.power = len(xml['trees'])
@@ -242,7 +236,7 @@ class OneForest():
             self._trees.append(OneTree(xml=iteration))
 
     def to_portal(self):
-        trees=[]
+        trees = []
         for tree in self._trees:
             trees.append(tree.to_portal())
         return {'out': self.full_output, 'trees': trees}
@@ -262,7 +256,7 @@ class ForestCollection():
         self._forests = []
         self._fullOutput = []
         self.best_fitness = 0
-        self.probability_gist = []
+        self.roulet = []
         if input_row and output_row:
             self._generate(list(input_row), list(output_row))
         elif previous_generation:
@@ -275,10 +269,10 @@ class ForestCollection():
         Generating number of forests (it's random in some frame).
         """
         self._fullInput = input_row
-        self.power = random.randint(MIN_FORESTS_IN_COLLECTION, MAX_FORESTS_IN_COLLECTION)
+        self.power = FORESTS_IN_GENERATION
         self._fullOutput = output_row
         for one_forest in range(self.power):
-            self._forests.append(OneForest(input_row=input_row, full_output=self._fullOutput))
+            self._forests.append(OneForest(input_row=self._fullInput, full_output=self._fullOutput))
 
     def _next_generation(self, previous_generation):
         """
@@ -286,9 +280,10 @@ class ForestCollection():
         and them over.
         """
         self._fullInput, self._fullOutput = previous_generation.get_data()
-        self.power = previous_generation.power
+        self.power = FORESTS_IN_GENERATION
         for forest_iteration in range(self.power):
             first, second = previous_generation.selection()
+            print 'selected for crossover ->', first.fitness, second.fitness
             self._forests.append(OneForest(first_forest=first, second_forest=second))
 
     def get_data(self):
@@ -305,7 +300,7 @@ class ForestCollection():
         process_list = []
         forests_queue = Queue(self.power)
         iterational = 0
-        print '| |-starting evaluation, education and validation'
+        print '| |-starting evaluation, training and validation'
         for one_forest in self._forests:
             process_list.append(Process(target=main_async_method, args=(forests_queue, copy.copy(one_forest.to_portal()), iterational)))
             iterational += 1
@@ -316,16 +311,10 @@ class ForestCollection():
         for iter in range(forests_queue.qsize()):
             tmp = forests_queue.get()
             self._forests[tmp['place']].fitness = tmp['fitness']
-        print '| |-finished'
-        fitness_summ = 0
-        for one_forest in self._forests:
-            fitness_summ += one_forest.fitness
-        self.probability_gist = []
-        temp_probability = 0
-        for one_forest in self._forests:
-            self.probability_gist.append(temp_probability + one_forest.fitness / fitness_summ)
-            temp_probability = self.probability_gist[-1]
-        print '| |-', self.probability_gist
+        fitness_summ = reduce(lambda x, y: x + y, map(lambda x: x.fitness, self._forests))
+        fss = map(lambda x: x.fitness, self._forests)
+        print 'avg = ', str(sum(fss) / len(fss)), 'max = ', max(fss)
+        self.roulet = map(lambda x: x.fitness/fitness_summ, self._forests)
 
     def selection(self):
         """
@@ -336,16 +325,19 @@ class ForestCollection():
         def select_by_prob(probability_gist):
             """selecting one point in probability gist
             """
-            a = random.random()
-            step = 0
-            while (step < len(probability_gist)) and (probability_gist[step] < a):
-                step += 1
-            return step - 1
-        first = select_by_prob(self.probability_gist)
+            ball = random.random()
+            stop_sector = 0
+            for sector in self.roulet:
+                ball -= sector
+                if ball < 0:
+                    return stop_sector
+                else:
+                    stop_sector += 1
+            return stop_sector
+        first = select_by_prob(self.roulet)
         second = first
-        while second == first:
-            second = select_by_prob(self.probability_gist)
-        print '| | |-', first,  second
+        while self._forests[first] == self._forests[second]:
+            second = select_by_prob(self.roulet)
         return self._forests[first], self._forests[second]
 
     def mutate(self):
@@ -389,7 +381,7 @@ class Experiment():
 
             self.fitness = experimental_collection.best_fitness
             self.count += 1
-            self._xml_store += '<iteration best_fitness="' + str(self.fitness) + '" generation="' + str(
+            self._xml_store += '<iteration generation="' + str(
                 self.count) + '">\n'
             self._xml_store += experimental_collection.store_xml()
             self._xml_store += '</iteration>\n'

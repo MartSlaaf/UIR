@@ -27,15 +27,14 @@ lines = f.readlines()
 for line in lines:
     input_line[2]['data'].append(float(line))
 f.close()
-f = open('tech_pool_target.csv', 'r')
+f = open('target_diff.csv', 'r')
 lines = f.readlines()
 for line in lines:
     output_line[0]['data'].append(float(line))
-differ = DiscrDiff()
-output_line[0]['data'] = differ.eval_me(output_line[0]['data'])
+
 f.close()
-for iteration in range(20):
+for iteration in range(80):
     print '-+=>', iteration, '<=+-'
-    experiment = Experiment(input_line, output_line, '../' + str(iteration) + '.xml')
+    experiment = Experiment(input_line, output_line, '../day7_' + str(iteration) + '.xml')
     experiment.start_experiment(stopping_count(15))
 
