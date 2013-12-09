@@ -35,6 +35,6 @@ for line in lines:
 f.close()
 for iteration in range(80):
     print '-+=>', iteration, '<=+-'
-    experiment = Experiment(input_line, output_line, '../day7_' + str(iteration) + '.xml')
-    experiment.start_experiment(stopping_count(15))
+    experiment = Experiment(input_line, output_line, '../day8_' + str(iteration) + '.xml')
+    experiment.start_experiment(stopping_count(10))
 

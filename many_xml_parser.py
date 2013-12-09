@@ -5,15 +5,16 @@ from NodesLibrary import LIST_OF_FUNCTIONS
 
 LIST_OF_ENTERS = ['inflow_noizd', 'outflow', 'trash']
 inputs = []
-for i in range(0, 5):
-    inputs.append('../day7_' + str(i) + '.xml')
+for i in range(0, 8):
+    inputs.append('../day8_' + str(i) + '.xml')
 #for i in range(0, 11):
 #    inputs.append('../day2_'+str(i)+'.xml')
-maximums = [[] for i in range(15)]
-averages = [[] for i in range(15)]
-trashinp = [[] for i in range(15)]
-median = [[] for i in range(15)]
-average = [[] for i in range(15)]
+geners = 10
+maximums = [[] for i in range(geners)]
+averages = [[] for i in range(geners)]
+trashinp = [[] for i in range(geners)]
+median = [[] for i in range(geners)]
+average = [[] for i in range(geners)]
 
 for iter_input in inputs:
     tree = ElementTree.parse(iter_input)
@@ -44,7 +45,7 @@ for iter_input in inputs:
 
 outfile = open('result.csv', 'w')
 outfile.writelines('max_max;min_max;avg_max;max_avg;min_avg;avg_avg;trashdata;MovingAverage;Median;' + '\n')
-for i in range(15):
+for i in range(geners):
     outline = str(max(maximums[i])) + ';' + str(min(maximums[i])) + ';' + str(
         sum(maximums[i]) / len(maximums[i])) + ';' + str(max(averages[i])) + ';' + str(min(averages[i])) + ';' + str(
         sum(averages[i]) / len(averages[i])) + ';' + str(sum(trashinp[i]) / len(trashinp[i])) + ';' + str(

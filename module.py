@@ -34,6 +34,7 @@ class OwnNeuro():
         self.MSE = 0
         self.hidden_power = int(
             (output_power * education_power / (1 + log(education_power, 2))) / (input_power + output_power))
+        #self.hidden_power = sqrt(education_power/input_power) + 2
         self.network = buildNetwork(self.input_power, self.hidden_power, self.output_power)
 
     def _form_set(self, input_row, output_row):
@@ -65,8 +66,7 @@ class OwnNeuro():
             continueEpochs=OUTCASTING_EPOCHS)
         len_validate = int(len(output_row[0]['data'])*(1-PARTITION_OF_EDUCATION_VERIFICATION_SET))
         results_of = [list(self.network.activate(x))[0] for x in self.inputs_for_validation[len_validate:]]
-        #self.MSE = sqrt(sum([(results_of[x]-output_row[0]['data'][x]) ** 2 for x in range(len_validate, len(results_of)-1)]) / len(results_of))
-        self.MSE = sum([fabs(results_of[x]-output_row[0]['data'][x]) for x in range(len_validate, len(results_of)-1)]) / len(results_of)
+        self.MSE = sum(map(lambda x, y:  fabs(x-y), list(results_of), list(output_row[0]['data'][len_validate:]))) / len(results_of)
         print '| | |-MSE = ', self.MSE
 
     def validate(self):
