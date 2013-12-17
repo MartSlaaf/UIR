@@ -1,7 +1,7 @@
 __author__ = 'martolod'
 
 import xml.etree.ElementTree as ElementTree
-from NodesLibrary import LIST_OF_FUNCTIONS
+from calculationModule.NodesLibrary import LIST_OF_FUNCTIONS
 LIST_OF_ENTERS = ['inflow_noizd', 'outflow', 'trash']
 
 tree = ElementTree.parse('outcast.xml')

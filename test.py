@@ -1,4 +1,4 @@
-from module import OwnNeuro
+from Experiment import OwnNeuro
 import random
 from multiprocessing import Process, Queue
 from NodesLibrary import *

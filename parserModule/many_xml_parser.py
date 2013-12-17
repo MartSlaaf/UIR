@@ -1,15 +1,12 @@
 __author__ = 'martolod'
 
 import xml.etree.ElementTree as ElementTree
-from NodesLibrary import LIST_OF_FUNCTIONS
 
 LIST_OF_ENTERS = ['inflow_noizd', 'outflow', 'trash']
-inputs = []
-for i in range(0, 8):
-    inputs.append('../day8_' + str(i) + '.xml')
-#for i in range(0, 11):
-#    inputs.append('../day2_'+str(i)+'.xml')
-geners = 10
+inputs = ['day12_prob0.0101017007509_experiment0_experiment1_experiment2.xml',
+          'day12_prob0.0101017007509_experiment0_experiment1.xml', 'day12_prob0.0101017007509_experiment0.xml']
+
+geners = 15
 maximums = [[] for i in range(geners)]
 averages = [[] for i in range(geners)]
 trashinp = [[] for i in range(geners)]
@@ -17,7 +14,7 @@ median = [[] for i in range(geners)]
 average = [[] for i in range(geners)]
 
 for iter_input in inputs:
-    tree = ElementTree.parse(iter_input)
+    tree = ElementTree.parse('../outflowData/' + iter_input)
     root = tree.getroot()
     i = 0
     for generation in root:
@@ -52,5 +49,3 @@ for i in range(geners):
         sum(average[i]) / len(average[i])) + ';' + str(sum(median[i]) / len(median[i])) + ';'
     outfile.writelines(outline + '\n')
 outfile.close()
-
-

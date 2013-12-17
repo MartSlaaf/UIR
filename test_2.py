@@ -1,40 +1,37 @@
-__author__ = 'martolod'
+__author__ = 'Martolod Slaaf'
+from calculationModule.Experiment import Experiment, Settings
+from calculationModule.OwnMath import stopping_count
 
-from module import Experiment
-from OwnMath import stopping_count
-from NodesLibrary import DiscrDiff
-import random
+probabilities = [0.0016694521863087,
+                 0.0033445065874036,
+                 0.0050252104398539,
+                 0.0067116116207313,
+                 0.0084037586596125,
+                 0.010101700750871]
 
 
-input_line = []
-output_line = []
-input_line.append({'name': 'outflow', 'data': []})
-input_line.append({'name': 'inflow_noizd', 'data': []})
-input_line.append({'name': 'trash', 'data': []})
-output_line.append({'name': 'target', 'data': []})
-f = open('tech_pool_outflow.csv', 'r')
-lines = f.readlines()
-for line in lines:
-    input_line[0]['data'].append(float(line))
-f.close()
-f = open('tech_pool_inflow_impnoised.csv', 'r')
-lines = f.readlines()
-for line in lines:
-    input_line[1]['data'].append(float(line))
-f.close()
-f = open('tech_pool_trashdata.csv', 'r')
-lines = f.readlines()
-for line in lines:
-    input_line[2]['data'].append(float(line))
-f.close()
-f = open('target_diff.csv', 'r')
-lines = f.readlines()
-for line in lines:
-    output_line[0]['data'].append(float(line))
+def from_csv_column(filename):
+    current_file = open('inflowData/' + filename, 'r')
+    rows = current_file.readlines()
+    current_file.close()
+    output_list = []
+    for row in rows:
+        output_list.append(float(row))
+    return output_list
 
-f.close()
-for iteration in range(80):
-    print '-+=>', iteration, '<=+-'
-    experiment = Experiment(input_line, output_line, '../day8_' + str(iteration) + '.xml')
-    experiment.start_experiment(stopping_count(10))
 
+input_line = list()
+input_line.append({'name': 'outflow', 'data': from_csv_column('tech_pool_outflow.csv')})
+input_line.append({'name': 'inflow_noizd', 'data': from_csv_column('tech_pool_inflow_impnoised.csv')})
+input_line.append({'name': 'trash', 'data': from_csv_column('tech_pool_trashdata.csv')})
+output_line = list()
+output_line.append({'name': 'target', 'data': from_csv_column('target_diff.csv')})
+
+setting = Settings(population_count=6, stopping_criteria=stopping_count(15))
+for prob in probabilities:
+    setting.forest_mutation_probability = prob
+    setting.tree_mutation_probability = prob
+    setting.node_mutation_probability = prob
+    setting.filename = 'day12_prob' + str(prob)
+    experiment = Experiment(input_line, output_line, setting)
+    experiment.start_experiments_set(3)
