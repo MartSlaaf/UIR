@@ -67,6 +67,6 @@ class Experiment():
     def start_experiments_set(self, count):
         for once in range(count):
             print '-+=>', once, '<=+-'
-            self.settings.local_filename = '../outflowData/' + self.settings.filename + '_experiment' + str(once)
+            self.settings.local_filename = 'outflowData/' + self.settings.filename + '_experiment' + str(once)
             self.start_experiment()
             self.__init__(self._fullInput, self._fullOutput, self.settings)  # reinit for next experiment
