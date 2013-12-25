@@ -1,0 +1,823 @@
+<?xml version="1.1" encoding="UTF-8" ?>
+<experiment>
+<iteration generation="1">
+<forest power="2"  fitness="0.649232529155">
+<tree input="trash" power="3">
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+</tree>
+<tree input="inflow_noizd" power="3">
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 7}"/>
+</tree>
+</forest>
+<forest power="1"  fitness="0.663196725222">
+<tree input="inflow_noizd" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+</tree>
+</forest>
+<forest power="1"  fitness="0.6636712784">
+<tree input="outflow" power="3">
+<node function="MovingAverage" enter_params="{'window': 7}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+</tree>
+</forest>
+<forest power="2"  fitness="0.950874181659">
+<tree input="outflow" power="4">
+<node function="MovingAverage" enter_params="{'window': 3}"/>
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="MedianFilter" enter_params="{'frame': 7}"/>
+<node function="MovingAverage" enter_params="{'window': 3}"/>
+</tree>
+</forest>
+<forest power="3"  fitness="0.712670266198">
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 3}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+</forest>
+<forest power="1"  fitness="0.682179662187">
+<tree input="inflow_noizd" power="3">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="NoFilter" enter_params="{}"/>
+<node function="NoFilter" enter_params="{}"/>
+</tree>
+</forest>
+</iteration>
+<iteration generation="2">
+<forest power="3"  fitness="0.953258974497">
+<tree input="outflow" power="4">
+<node function="MovingAverage" enter_params="{'window': 3}"/>
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+<tree input="outflow" power="3">
+<node function="MovingAverage" enter_params="{'window': 7}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="MedianFilter" enter_params="{'frame': 7}"/>
+<node function="MovingAverage" enter_params="{'window': 3}"/>
+</tree>
+</forest>
+<forest power="3"  fitness="0.770849686">
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+</tree>
+<tree input="outflow" power="3">
+<node function="MovingAverage" enter_params="{'window': 7}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+</forest>
+<forest power="2"  fitness="0.651684767714">
+<tree input="trash" power="3">
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+</tree>
+<tree input="inflow_noizd" power="3">
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 7}"/>
+</tree>
+</forest>
+<forest power="2"  fitness="0.70733816135">
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+</forest>
+<forest power="3"  fitness="0.950935807045">
+<tree input="inflow_noizd" power="2">
+<node function="MedianFilter" enter_params="{'frame': 7}"/>
+<node function="MovingAverage" enter_params="{'window': 3}"/>
+</tree>
+<tree input="inflow_noizd" power="3">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="NoFilter" enter_params="{}"/>
+<node function="NoFilter" enter_params="{}"/>
+</tree>
+<tree input="outflow" power="4">
+<node function="MovingAverage" enter_params="{'window': 3}"/>
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+</forest>
+<forest power="3"  fitness="0.71234468151">
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 3}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+</forest>
+</iteration>
+<iteration generation="3">
+<forest power="3"  fitness="0.712998253171">
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+</tree>
+<tree input="trash" power="3">
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+</tree>
+</forest>
+<forest power="3"  fitness="0.664860661084">
+<tree input="outflow" power="3">
+<node function="MovingAverage" enter_params="{'window': 7}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+</tree>
+</forest>
+<forest power="3"  fitness="0.65548865238">
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 3}"/>
+</tree>
+</forest>
+<forest power="3"  fitness="0.77469737396">
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+</tree>
+<tree input="outflow" power="3">
+<node function="MovingAverage" enter_params="{'window': 7}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+</forest>
+<forest power="3"  fitness="0.665339127117">
+<tree input="inflow_noizd" power="3">
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 7}"/>
+</tree>
+<tree input="trash" power="3">
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+</tree>
+<tree input="outflow" power="3">
+<node function="MovingAverage" enter_params="{'window': 7}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+</tree>
+</forest>
+<forest power="4"  fitness="0.715108588264">
+<tree input="inflow_noizd" power="2">
+<node function="MedianFilter" enter_params="{'frame': 7}"/>
+<node function="MovingAverage" enter_params="{'window': 3}"/>
+</tree>
+<tree input="trash" power="3">
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+</tree>
+<tree input="inflow_noizd" power="3">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="NoFilter" enter_params="{}"/>
+<node function="NoFilter" enter_params="{}"/>
+</tree>
+<tree input="inflow_noizd" power="3">
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 7}"/>
+</tree>
+</forest>
+</iteration>
+<iteration generation="4">
+<forest power="3"  fitness="0.711160077327">
+<tree input="inflow_noizd" power="2">
+<node function="MedianFilter" enter_params="{'frame': 7}"/>
+<node function="MovingAverage" enter_params="{'window': 3}"/>
+</tree>
+<tree input="trash" power="3">
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+</tree>
+<tree input="trash" power="3">
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+</tree>
+</forest>
+<forest power="4"  fitness="0.648419687226">
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 3}"/>
+</tree>
+<tree input="trash" power="3">
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+</tree>
+<tree input="inflow_noizd" power="3">
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+<forest power="1"  fitness="0.652801013782">
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+</tree>
+</forest>
+<forest power="2"  fitness="0.704300157495">
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+</tree>
+</forest>
+<forest power="2"  fitness="0.708728280177">
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+</tree>
+</forest>
+<forest power="2"  fitness="0.652590539077">
+<tree input="inflow_noizd" power="3">
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+</tree>
+</forest>
+</iteration>
+<iteration generation="5">
+<forest power="3"  fitness="0.673484990112">
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+</tree>
+<tree input="inflow_noizd" power="3">
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+</tree>
+</forest>
+<forest power="2"  fitness="0.765314281918">
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+</forest>
+<forest power="3"  fitness="0.786818352787">
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+</tree>
+<tree input="inflow_noizd" power="3">
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+</forest>
+<forest power="1"  fitness="0.713488339791">
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+</forest>
+<forest power="1"  fitness="0.669132001944">
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+</tree>
+</forest>
+<forest power="3"  fitness="0.674276483635">
+<tree input="inflow_noizd" power="3">
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+</tree>
+</forest>
+</iteration>
+<iteration generation="6">
+<forest power="2"  fitness="0.681209925125">
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="inflow_noizd" power="3">
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+<forest power="2"  fitness="0.682289999894">
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+<forest power="2"  fitness="0.712175456505">
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+</forest>
+<forest power="3"  fitness="0.887579239421">
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+</forest>
+<forest power="4"  fitness="0.682484855395">
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="inflow_noizd" power="3">
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+<forest power="4"  fitness="0.681165862879">
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="inflow_noizd" power="3">
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+</iteration>
+<iteration generation="7">
+<forest power="2"  fitness="0.890663812388">
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+<forest power="5"  fitness="0.68264833614">
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="inflow_noizd" power="3">
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+<forest power="2"  fitness="0.885351035685">
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+<forest power="5"  fitness="0.908360535919">
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+<forest power="4"  fitness="0.907236497172">
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+<forest power="3"  fitness="0.905975026855">
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="EvenNoise" enter_params="{'frame': 0}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+</iteration>
+<iteration generation="8">
+<forest power="6"  fitness="0.950591778018">
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="inflow_noizd" power="3">
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+<forest power="1"  fitness="0.699868445414">
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+</forest>
+<forest power="2"  fitness="0.684443013753">
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+<forest power="3"  fitness="0.95569446635">
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+</forest>
+<forest power="4"  fitness="0.685907415112">
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="inflow_noizd" power="3">
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+<forest power="3"  fitness="0.685901962016">
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+</iteration>
+<iteration generation="9">
+<forest power="3"  fitness="0.684736680277">
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+<forest power="1"  fitness="0.683304113786">
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+<forest power="3"  fitness="0.942650530126">
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+<forest power="1"  fitness="0.683511810173">
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+<forest power="5"  fitness="0.683676264239">
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="inflow_noizd" power="3">
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+<forest power="4"  fitness="0.683961001994">
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+</iteration>
+<iteration generation="10">
+<forest power="1"  fitness="0.683297876771">
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+<forest power="3"  fitness="0.954660986942">
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="inflow_noizd" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+<forest power="2"  fitness="0.684302660929">
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+<forest power="2"  fitness="0.684525316">
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+<forest power="1"  fitness="0.683813491778">
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+<forest power="5"  fitness="0.680988319712">
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="inflow_noizd" power="3">
+<node function="MedianFilter" enter_params="{'frame': 5}"/>
+<node function="DiscrDiff" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+<tree input="outflow" power="2">
+<node function="NoFilter" enter_params="{}"/>
+<node function="MovingAverage" enter_params="{'window': 5}"/>
+</tree>
+</forest>
+</iteration>
+</experiment>

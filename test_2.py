@@ -2,12 +2,12 @@ __author__ = 'Martolod Slaaf'
 from calculationModule.Experiment import Experiment, Settings
 from calculationModule.OwnMath import stopping_count
 
-probabilities = [0.0016694521863087,
-                 0.0033445065874036,
-                 0.0050252104398539,
-                 0.0067116116207313,
-                 0.0084037586596125,
-                 0.010101700750871]
+probabilities = [0.005,
+                 0.01,
+                 0.015,
+                 0.02,
+                 0.025,
+                 0.03]
 
 
 def from_csv_column(filename):
@@ -27,11 +27,11 @@ input_line.append({'name': 'trash', 'data': from_csv_column('tech_pool_trashdata
 output_line = list()
 output_line.append({'name': 'target', 'data': from_csv_column('target_diff.csv')})
 
-setting = Settings(population_count=6, stopping_criteria=stopping_count(15))
+setting = Settings(forest_mutation_probability=0, tree_mutation_probability=0, population_count=6, stopping_criteria=stopping_count(10))
 for prob in probabilities:
     setting.forest_mutation_probability = prob
     setting.tree_mutation_probability = prob
     setting.node_mutation_probability = prob
-    setting.filename = 'day12_prob' + str(prob)
+    setting.filename = 'day13_prob' + str(prob)
     experiment = Experiment(input_line, output_line, setting)
     experiment.start_experiments_set(3)

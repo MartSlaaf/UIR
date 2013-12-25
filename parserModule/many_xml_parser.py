@@ -3,8 +3,7 @@ __author__ = 'martolod'
 import xml.etree.ElementTree as ElementTree
 
 LIST_OF_ENTERS = ['inflow_noizd', 'outflow', 'trash']
-inputs = ['day12_prob0.0101017007509_experiment0_experiment1_experiment2.xml',
-          'day12_prob0.0101017007509_experiment0_experiment1.xml', 'day12_prob0.0101017007509_experiment0.xml']
+inputs = ['2013_12_25-03_32_49_experiment' + str(i) + '.xml' for i in xrange(3)]
 
 geners = 15
 maximums = [[] for i in range(geners)]
