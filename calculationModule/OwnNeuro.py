@@ -57,6 +57,12 @@ class OwnNeuro():
         results_of = [list(self.network.activate(x))[0] for x in self.inputs_for_validation[len_validate:]]
         self.mse = sum(map(lambda result, target: fabs(result - target), list(results_of),
                            list(output_row[0]['data'][len_validate:]))) / len(results_of)
+        print 'DUMB-dd'
+        for it in results_of:
+            print it
+        print 'DUMB-pp'
+        for it in list(output_row[0]['data'][len_validate:]):
+            print it
         print '| | |-MSE = ', self.mse
 
     def validate(self):
